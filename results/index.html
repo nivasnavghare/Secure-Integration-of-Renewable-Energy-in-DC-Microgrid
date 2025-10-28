@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DC Microgrid Simulation Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            padding: 40px;
+            background: #f8f9fa;
+        }
+        
+        .metric-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-left: 5px solid #667eea;
+        }
+        
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 12px rgba(0,0,0,0.15);
+        }
+        
+        .metric-card h3 {
+            color: #667eea;
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+        
+        .metric-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        
+        .metric-card .unit {
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        .charts {
+            padding: 40px;
+        }
+        
+        .chart-section {
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .chart-section h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .chart-section img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 30px;
+        }
+        
+        .footer p {
+            margin: 5px 0;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            background: #27ae60;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin-top: 10px;
+        }
+        
+        .timestamp {
+            text-align: center;
+            padding: 20px;
+            background: #ecf0f1;
+            color: #7f8c8d;
+            font-size: 0.9em;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .metrics {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ DC Microgrid Simulation Results</h1>
+            <p>Secure Integration of Renewable Energy in DC Microgrid</p>
+            <div class="badge">✓ Simulation Completed Successfully</div>
+        </div>
+        
+        <div class="timestamp">
+            <p>Simulation Date: <strong id="simDate"></strong></p>
+            <p>Duration: <strong>24 hours</strong> | Time Steps: <strong>1,440</strong></p>
+        </div>
+        
+        <div class="metrics">
+            <div class="metric-card">
+                <h3>PV Energy Generated</h3>
+                <div class="value">815.13</div>
+                <div class="unit">kWh</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Wind Energy Generated</h3>
+                <div class="value">399.37</div>
+                <div class="unit">kWh</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Total Load</h3>
+                <div class="value">574.92</div>
+                <div class="unit">kWh</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Renewable Penetration</h3>
+                <div class="value">211.2</div>
+                <div class="unit">%</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Battery Efficiency</h3>
+                <div class="value">84.9</div>
+                <div class="unit">%</div>
+            </div>
+            
+            <div class="metric-card">
+                <h3>Average SOC</h3>
+                <div class="value">77.8</div>
+                <div class="unit">%</div>
+            </div>
+        </div>
+        
+        <div class="charts">
+            <div class="chart-section">
+                <h2>📊 Power Balance Analysis</h2>
+                <img src="power_balance.png" alt="Power Balance Chart">
+                <p style="margin-top: 15px; color: #7f8c8d;">
+                    Real-time power generation from PV and wind sources balanced against load demand, 
+                    with battery storage providing grid stability.
+                </p>
+            </div>
+            
+            <div class="chart-section">
+                <h2>🔋 Battery Energy Storage System</h2>
+                <img src="battery_operation.png" alt="Battery Operation Chart">
+                <p style="margin-top: 15px; color: #7f8c8d;">
+                    State of Charge (SOC) management and charge/discharge cycles optimized for 
+                    maximum efficiency and longevity.
+                </p>
+            </div>
+            
+            <div class="chart-section">
+                <h2>🌱 Renewable Energy Generation Breakdown</h2>
+                <img src="renewable_generation.png" alt="Renewable Generation Chart">
+                <p style="margin-top: 15px; color: #7f8c8d;">
+                    Contribution of each renewable energy source to the total generation over 
+                    the simulation period.
+                </p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>COEP Technological University, Pune</strong></p>
+            <p>Department of Electrical Engineering</p>
+            <p>Researcher: Nivas D. Navghare | Guide: Dr. Arti V. Tare</p>
+            <p style="margin-top: 15px; font-size: 0.9em; opacity: 0.8;">
+                Master of Engineering in Electrical Power System
+            </p>
+        </div>
+    </div>
+    
+    <script>
+        // Set current date
+        document.getElementById('simDate').textContent = new Date().toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    </script>
+</body>
+</html>
