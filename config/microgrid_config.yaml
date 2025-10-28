@@ -1,0 +1,121 @@
+# DC Microgrid Configuration File
+# Project: Secure Integration of Renewable Energy in DC Microgrid
+
+system:
+  name: "DC_Microgrid_Test_System"
+  voltage_level: 380  # DC voltage in Volts
+  frequency: 50  # Hz (for AC components)
+  simulation_time: 3600  # seconds
+
+# Renewable Energy Sources
+photovoltaic:
+  enabled: true
+  rated_power: 100  # kW
+  efficiency: 0.18
+  temperature_coefficient: -0.004  # per °C
+  panel_area: 600  # m²
+  location:
+    latitude: 18.5204
+    longitude: 73.8567
+  irradiance_profile: "data/solar_irradiance.csv"
+
+wind_turbine:
+  enabled: true
+  rated_power: 50  # kW
+  cut_in_speed: 3  # m/s
+  rated_speed: 12  # m/s
+  cut_out_speed: 25  # m/s
+  hub_height: 30  # meters
+  rotor_diameter: 15  # meters
+  wind_profile: "data/wind_speed.csv"
+
+# Battery Energy Storage System
+bess:
+  enabled: true
+  capacity: 200  # kWh
+  max_charge_rate: 50  # kW
+  max_discharge_rate: 50  # kW
+  initial_soc: 0.5  # State of Charge (0-1)
+  min_soc: 0.2
+  max_soc: 0.9
+  efficiency: 0.95
+  battery_type: "Lithium-ion"
+
+# Loads
+loads:
+  critical_load:
+    power: 80  # kW
+    priority: 1
+    load_profile: "data/critical_load.csv"
+  
+  non_critical_load:
+    power: 40  # kW
+    priority: 2
+    load_profile: "data/non_critical_load.csv"
+
+# Protection System
+protection:
+  overcurrent_threshold: 1.5  # per unit
+  undervoltage_threshold: 0.85  # per unit
+  overvoltage_threshold: 1.15  # per unit
+  fault_detection_time: 0.05  # seconds
+  relay_coordination_enabled: true
+  ai_protection_enabled: true
+
+# AI/ML Parameters
+ai_ml:
+  fault_detection:
+    model_type: "LSTM"  # LSTM, CNN, or Hybrid
+    input_features: ["voltage", "current", "power", "frequency"]
+    sequence_length: 100
+    prediction_horizon: 10
+    confidence_threshold: 0.85
+  
+  anomaly_detection:
+    algorithm: "IsolationForest"
+    contamination: 0.1
+    n_estimators: 100
+  
+  adaptive_control:
+    algorithm: "DQN"  # Deep Q-Network
+    learning_rate: 0.001
+    discount_factor: 0.95
+    epsilon: 0.1
+
+# Cybersecurity
+cybersecurity:
+  intrusion_detection_enabled: true
+  encryption_enabled: true
+  authentication_protocol: "OAuth2.0"
+  monitoring_interval: 1  # seconds
+  alert_threshold: 3  # number of suspicious events
+
+# Power Quality Metrics
+power_quality:
+  thd_limit: 5.0  # Total Harmonic Distortion (%)
+  voltage_regulation: 2.0  # %
+  frequency_deviation: 0.5  # Hz
+  measurement_interval: 0.1  # seconds
+
+# Optimization
+optimization:
+  objective: "minimize_cost"  # minimize_cost, maximize_reliability
+  time_horizon: 24  # hours
+  time_step: 1  # hours
+  solver: "CVXPY"
+  
+# Simulation Parameters
+simulation:
+  solver: "RK45"
+  max_step: 0.01
+  rtol: 1e-6
+  atol: 1e-9
+  output_interval: 1  # seconds
+  save_results: true
+  result_path: "results/"
+
+# Logging
+logging:
+  level: "INFO"  # DEBUG, INFO, WARNING, ERROR
+  log_file: "logs/microgrid.log"
+  console_output: true

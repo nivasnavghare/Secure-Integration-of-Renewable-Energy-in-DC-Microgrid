@@ -5,7 +5,57 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![University](https://img.shields.io/badge/University-COEP%20Pune-blue)](https://www.coep.org.in/)
 
-## 📋 Overview
+## � Quick Start
+
+### Running the Simulation
+
+**Option 1: Demo Version (No ML dependencies - Quick Start)**
+```bash
+# 1. Install core dependencies
+pip install numpy scipy pandas matplotlib scikit-learn pyyaml h5py
+
+# 2. Run demo simulation
+python main_demo.py
+```
+
+**Option 2: Full Version with AI/ML (Requires Python 3.11/3.12)**
+```bash
+# 1. Create virtual environment with Python 3.11 or 3.12
+python3.11 -m venv .venv
+source .venv/bin/activate  # On macOS/Linux
+
+# 2. Install all dependencies
+pip install -r requirements.txt
+
+# 3. Run full simulation with AI protection
+python main.py
+```
+
+**Option 3: MATLAB Simulation**
+```matlab
+% In MATLAB
+cd matlab_simulation
+dc_microgrid_simulation
+```
+
+### View Results
+After running the simulation, check the `results/` directory for:
+- `power_balance.png` - Power generation and consumption
+- `battery_operation.png` - Battery SOC and charge/discharge
+- `renewable_generation.png` - Renewable energy breakdown
+
+### Configuration
+Customize simulation parameters by editing `config/microgrid_config.yaml`:
+- System voltage and capacity
+- PV and wind turbine specifications
+- Battery parameters
+- Protection thresholds
+
+📖 **Detailed documentation**: See [CODE_README.md](CODE_README.md) for complete setup instructions and API documentation.
+
+---
+
+## �📋 Overview
 
 This research project addresses the critical challenges in integrating renewable energy sources into DC microgrids through AI-driven adaptive protection and control mechanisms. The project focuses on developing a comprehensive framework that ensures security, stability, and reliability in DC microgrid operations.
 
