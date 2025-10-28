@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MATLAB-Style DC Microgrid Results</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            color: #f0f0f0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #0066cc 0%, #004c99 100%);
+            color: white;
+            padding: 30px 40px;
+            border-bottom: 3px solid #0052a3;
+        }
+        
+        .header h1 {
+            font-size: 2.2em;
+            font-family: 'Courier New', monospace;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            font-family: Arial, sans-serif;
+        }
+        
+        .matlab-console {
+            background: #1e1e1e;
+            padding: 30px 40px;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            border-bottom: 2px solid #0052a3;
+        }
+        
+        .console-line {
+            margin: 5px 0;
+            line-height: 1.6;
+        }
+        
+        .prompt {
+            color: #00ccff;
+        }
+        
+        .value {
+            color: #ffff00;
+            font-weight: bold;
+        }
+        
+        .separator {
+            color: #00ff00;
+            margin: 10px 0;
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px 40px;
+            background: #2d2d2d;
+        }
+        
+        .metric-box {
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #0066cc;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .metric-box .label {
+            color: #00ccff;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+        }
+        
+        .metric-box .number {
+            color: #ffff00;
+            font-size: 2em;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .metric-box .unit {
+            color: #888;
+            font-size: 0.9em;
+        }
+        
+        .figures-section {
+            padding: 40px;
+            background: #252525;
+        }
+        
+        .figure-container {
+            margin-bottom: 40px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+        
+        .figure-container h2 {
+            color: #0066cc;
+            font-family: Arial, sans-serif;
+            font-size: 1.3em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0066cc;
+        }
+        
+        .figure-container img {
+            width: 100%;
+            border-radius: 5px;
+        }
+        
+        .figure-description {
+            margin-top: 15px;
+            padding: 15px;
+            background: #f5f5f5;
+            border-left: 4px solid #0066cc;
+            color: #333;
+            font-family: Arial, sans-serif;
+            font-size: 0.95em;
+            line-height: 1.6;
+        }
+        
+        .footer {
+            background: #1a1a1a;
+            color: #888;
+            text-align: center;
+            padding: 25px;
+            font-family: Arial, sans-serif;
+            font-size: 0.9em;
+        }
+        
+        .footer strong {
+            color: #00ccff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>>> MATLAB SIMULATION RESULTS</h1>
+            <p>DC Microgrid Secure Integration Analysis</p>
+        </div>
+        
+        <div class="matlab-console">
+            <div class="separator">======================================================================</div>
+            <div class="console-line"><span class="prompt">                    SIMULATION RESULTS</span></div>
+            <div class="separator">======================================================================</div>
+            <div class="console-line">&nbsp;</div>
+            <div class="console-line">Total PV Energy:           <span class="value">820.43 kWh</span></div>
+            <div class="console-line">Total Wind Energy:         <span class="value">405.40 kWh</span></div>
+            <div class="console-line">Total Generation:          <span class="value">1225.83 kWh</span></div>
+            <div class="console-line">Total Load:                <span class="value">2017.47 kWh</span></div>
+            <div class="console-line">System Efficiency:         <span class="value">164.58 %</span></div>
+            <div class="console-line">Renewable Penetration:     <span class="value">60.76 %</span></div>
+            <div class="console-line">Average Battery SOC:       <span class="value">21.16 %</span></div>
+            <div class="console-line">Estimated THD:             <span class="value">2.66 %</span></div>
+            <div class="separator">======================================================================</div>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-box">
+                <div class="label">System Voltage</div>
+                <div class="number">380</div>
+                <div class="unit">V DC</div>
+            </div>
+            <div class="metric-box">
+                <div class="label">PV Capacity</div>
+                <div class="number">100</div>
+                <div class="unit">kW</div>
+            </div>
+            <div class="metric-box">
+                <div class="label">Wind Capacity</div>
+                <div class="number">50</div>
+                <div class="unit">kW</div>
+            </div>
+            <div class="metric-box">
+                <div class="label">Battery Capacity</div>
+                <div class="number">200</div>
+                <div class="unit">kWh</div>
+            </div>
+            <div class="metric-box">
+                <div class="label">Simulation Time</div>
+                <div class="number">24</div>
+                <div class="unit">hours</div>
+            </div>
+            <div class="metric-box">
+                <div class="label">Time Steps</div>
+                <div class="number">1440</div>
+                <div class="unit">samples</div>
+            </div>
+        </div>
+        
+        <div class="figures-section">
+            <div class="figure-container">
+                <h2>Simulink Block Diagram: DC Microgrid System Architecture</h2>
+                <img src="simulink_block_diagram.png" alt="Simulink Block Diagram">
+                <div class="figure-description">
+                    <strong>Analysis:</strong> Complete Simulink block diagram showing the system architecture with 
+                    environmental input blocks (solar irradiance, temperature, wind speed), renewable generation 
+                    subsystems (PV with MPPT, wind turbine with power curve), battery management system with SOC 
+                    feedback loop, power balance calculations, DC bus voltage control, and real-time monitoring 
+                    scopes. The diagram also includes the AI-based protection layer with fault detection, anomaly 
+                    detection, and adaptive relay coordination blocks.
+                </div>
+            </div>
+            
+            <div class="figure-container">
+                <h2>Figure 1: DC Microgrid Power Balance</h2>
+                <img src="matlab_power_balance.png" alt="Power Balance">
+                <div class="figure-description">
+                    <strong>Analysis:</strong> This figure shows the real-time power generation from photovoltaic (PV) 
+                    and wind turbine sources compared against the load demand over a 24-hour period. The battery power 
+                    line indicates charging (positive) and discharging (negative) cycles, demonstrating the energy 
+                    storage system's role in balancing supply and demand.
+                </div>
+            </div>
+            
+            <div class="figure-container">
+                <h2>Figure 2: Battery Energy Storage System</h2>
+                <img src="matlab_battery_operation.png" alt="Battery Operation">
+                <div class="figure-description">
+                    <strong>Analysis:</strong> Top subplot displays the battery State of Charge (SOC) throughout the 
+                    simulation, maintained within safe operating limits (20% minimum, 90% maximum). Bottom subplot shows 
+                    the instantaneous power flow - positive values indicate charging from excess renewable generation, 
+                    while negative values represent discharging to meet load demands.
+                </div>
+            </div>
+            
+            <div class="figure-container">
+                <h2>Figure 3: DC Bus Voltage Profile</h2>
+                <img src="matlab_voltage_profile.png" alt="Voltage Profile">
+                <div class="figure-description">
+                    <strong>Analysis:</strong> Voltage stability analysis showing the DC bus voltage maintained near the 
+                    nominal 380V level. The green shaded region represents acceptable voltage deviation (±15% of nominal), 
+                    with red dashed lines indicating safety thresholds. The system successfully maintains voltage within 
+                    acceptable limits throughout the simulation.
+                </div>
+            </div>
+            
+            <div class="figure-container">
+                <h2>Figure 4: Environmental Conditions</h2>
+                <img src="matlab_environmental_conditions.png" alt="Environmental Conditions">
+                <div class="figure-description">
+                    <strong>Analysis:</strong> Three-panel visualization of environmental inputs: (1) Solar irradiance 
+                    with typical diurnal pattern peaking at midday, (2) Ambient temperature variation following solar 
+                    patterns, and (3) Wind speed profile with operational thresholds marked - cut-in (3 m/s), rated 
+                    (12 m/s), and cut-out (25 m/s) speeds for the wind turbine.
+                </div>
+            </div>
+            
+            <div class="figure-container">
+                <h2>Figure 5: Energy Distribution Analysis</h2>
+                <img src="matlab_energy_distribution.png" alt="Energy Distribution">
+                <div class="figure-description">
+                    <strong>Analysis:</strong> Left chart shows the breakdown of renewable energy generation by source, 
+                    with solar PV contributing approximately 67% and wind turbine 33% of total generation. Right chart 
+                    presents the complete energy flow through the system including generation, consumption, and battery 
+                    charge/discharge cycles.
+                </div>
+            </div>
+            
+            <div class="figure-container">
+                <h2>Figure 6: System Performance Dashboard</h2>
+                <img src="matlab_system_dashboard.png" alt="System Dashboard">
+                <div class="figure-description">
+                    <strong>Analysis:</strong> Comprehensive six-panel overview providing: (1) Total generation vs load 
+                    comparison, (2) Battery SOC trends, (3) DC bus voltage stability, (4) Individual renewable source 
+                    contributions, and (5) Battery power flow dynamics. This dashboard enables quick assessment of 
+                    overall system health and performance across all key parameters.
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>COEP Technological University, Pune</strong></p>
+            <p>Department of Electrical Engineering</p>
+            <p>Researcher: Nivas D. Navghare | Guide: Dr. Arti V. Tare</p>
+            <p style="margin-top: 10px;">Generated: <span id="timestamp"></span></p>
+        </div>
+    </div>
+    
+    <script>
+        document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    </script>
+</body>
+</html>
