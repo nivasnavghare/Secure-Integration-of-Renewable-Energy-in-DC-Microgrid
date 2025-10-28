@@ -2,18 +2,19 @@
 AI-based Fault Detection System
 
 This module implements machine learning models for real-time
-fault detection in DC microgrids.
+fault detection in DC microgrids using scikit-learn.
 """
 
 import numpy as np
-import tensorflow as tf
-from tensorflow import keras
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.preprocessing import StandardScaler
 from typing import Dict, List, Tuple, Optional
 import logging
+import joblib
 
 
 class FaultDetector:
-    """AI-based Fault Detection using LSTM Neural Network"""
+    """AI-based Fault Detection using Random Forest"""
     
     def __init__(self, config: Dict):
         """
@@ -23,13 +24,12 @@ class FaultDetector:
             config: Configuration dictionary for fault detection
         """
         self.config = config
-        self.model_type = config.get('model_type', 'LSTM')
         self.input_features = config.get('input_features', ['voltage', 'current', 'power'])
         self.sequence_length = config.get('sequence_length', 100)
         self.confidence_threshold = config.get('confidence_threshold', 0.85)
         
         self.model = None
-        self.scaler = None
+        self.scaler = StandardScaler()
         self.logger = logging.getLogger(__name__)
         
         # Fault types
@@ -46,62 +46,68 @@ class FaultDetector:
         self._build_model()
         
     def _build_model(self):
-        """Build LSTM-based fault detection model."""
-        n_features = len(self.input_features)
-        n_classes = len(self.fault_types)
-        
-        if self.model_type == 'LSTM':
-            model = keras.Sequential([
-                keras.layers.LSTM(
-                    128,
-                    return_sequences=True,
-                    input_shape=(self.sequence_length, n_features)
-                ),
-                keras.layers.Dropout(0.3),
-                keras.layers.LSTM(64, return_sequences=False),
-                keras.layers.Dropout(0.3),
-                keras.layers.Dense(32, activation='relu'),
-                keras.layers.Dense(n_classes, activation='softmax')
-            ])
-        elif self.model_type == 'CNN':
-            model = keras.Sequential([
-                keras.layers.Conv1D(
-                    filters=64,
-                    kernel_size=3,
-                    activation='relu',
-                    input_shape=(self.sequence_length, n_features)
-                ),
-                keras.layers.MaxPooling1D(pool_size=2),
-                keras.layers.Conv1D(filters=32, kernel_size=3, activation='relu'),
-                keras.layers.MaxPooling1D(pool_size=2),
-                keras.layers.Flatten(),
-                keras.layers.Dense(64, activation='relu'),
-                keras.layers.Dropout(0.3),
-                keras.layers.Dense(n_classes, activation='softmax')
-            ])
-        else:  # Hybrid CNN-LSTM
-            model = keras.Sequential([
-                keras.layers.Conv1D(
-                    filters=64,
-                    kernel_size=3,
-                    activation='relu',
-                    input_shape=(self.sequence_length, n_features)
-                ),
-                keras.layers.MaxPooling1D(pool_size=2),
-                keras.layers.LSTM(64, return_sequences=False),
-                keras.layers.Dropout(0.3),
-                keras.layers.Dense(32, activation='relu'),
-                keras.layers.Dense(n_classes, activation='softmax')
-            ])
-        
-        model.compile(
-            optimizer='adam',
-            loss='categorical_crossentropy',
-            metrics=['accuracy']
+        """Build and pre-train Random Forest-based fault detection model."""
+        self.model = RandomForestClassifier(
+            n_estimators=100,
+            max_depth=10,
+            random_state=42
         )
+
+        # Create synthetic training data for demonstration
+        n_samples = 1000
         
-        self.model = model
-        self.logger.info(f"{self.model_type} fault detection model built")
+        # Four features: voltage mean, voltage std, current mean, current std
+        n_features = 4
+        
+        # Generate normal operation data
+        normal_data = np.random.randn(n_samples // 2, n_features)
+        normal_data[:, 0] = 1.0 + 0.05 * normal_data[:, 0]  # Voltage mean around 1.0 pu
+        normal_data[:, 1] = 0.02 + 0.01 * abs(normal_data[:, 1])  # Small voltage variation
+        normal_data[:, 2] = 0.8 + 0.1 * normal_data[:, 2]  # Current mean around 0.8 pu
+        normal_data[:, 3] = 0.05 + 0.02 * abs(normal_data[:, 3])  # Small current variation
+        normal_labels = np.zeros(n_samples // 2, dtype=int)  # 0 = no_fault
+
+        # Generate fault data
+        fault_data = []
+        fault_labels = []
+        
+        for fault_type in range(1, len(self.fault_types)):
+            n_fault_samples = n_samples // (2 * (len(self.fault_types) - 1))
+            fault = normal_data[:n_fault_samples].copy()
+            
+            # Add fault characteristics
+            if fault_type == 1:  # short_circuit
+                fault[:, 0] *= 3  # Voltage spike
+                fault[:, 1] *= 5  # Current spike
+            elif fault_type == 2:  # open_circuit
+                fault[:, 0] *= 0.1  # Voltage drop
+                fault[:, 1] *= 0.1  # Current drop
+            elif fault_type == 3:  # ground_fault
+                fault[:, 0] *= 0.5  # Voltage drop
+                fault[:, 1] *= 2   # Current increase
+            elif fault_type == 4:  # overcurrent
+                fault[:, 1] *= 4   # Current spike
+            elif fault_type == 5:  # undervoltage
+                fault[:, 0] *= 0.7  # Voltage drop
+            elif fault_type == 6:  # overvoltage
+                fault[:, 0] *= 1.3  # Voltage spike
+
+            fault_data.append(fault)
+            fault_labels.extend([fault_type] * n_fault_samples)
+
+        # Combine data
+        X = np.vstack([normal_data] + fault_data)
+        y = np.concatenate([normal_labels, fault_labels])
+
+        # Shuffle data
+        idx = np.random.permutation(len(X))
+        X = X[idx]
+        y = y[idx]
+
+        # Pre-train the model
+        self.model.fit(X, y)
+        
+        self.logger.info("Random Forest fault detection model built and pre-trained")
         
     def preprocess_data(self, data: np.ndarray) -> np.ndarray:
         """
@@ -113,40 +119,12 @@ class FaultDetector:
         Returns:
             Preprocessed data
         """
-        # Normalize data
-        if self.scaler is None:
-            from sklearn.preprocessing import StandardScaler
-            self.scaler = StandardScaler()
-            return self.scaler.fit_transform(data)
-        return self.scaler.transform(data)
-    
-    def create_sequences(
-        self,
-        data: np.ndarray,
-        sequence_length: Optional[int] = None
-    ) -> np.ndarray:
-        """
-        Create sequences from time series data.
+        # Flatten sequence data for Random Forest
+        if len(data.shape) == 3:  # (samples, sequence_length, features)
+            n_samples, seq_len, n_features = data.shape
+            data = data.reshape(n_samples, seq_len * n_features)
         
-        Args:
-            data: Time series data
-            sequence_length: Length of sequences
-            
-        Returns:
-            Sequenced data
-        """
-        if sequence_length is None:
-            sequence_length = self.sequence_length
-        
-        n_samples = len(data) - sequence_length + 1
-        n_features = data.shape[1] if len(data.shape) > 1 else 1
-        
-        sequences = np.zeros((n_samples, sequence_length, n_features))
-        
-        for i in range(n_samples):
-            sequences[i] = data[i:i + sequence_length]
-        
-        return sequences
+        return self.scaler.fit_transform(data)
     
     def detect_fault(self, data: np.ndarray) -> Dict:
         """
@@ -159,10 +137,7 @@ class FaultDetector:
             Detection results with fault type and confidence
         """
         # Preprocess
-        processed_data = self.preprocess_data(data)
-        
-        # Create sequence
-        if len(processed_data) < self.sequence_length:
+        if len(data) < self.sequence_length:
             return {
                 'fault_detected': False,
                 'fault_type': 'no_fault',
@@ -170,12 +145,21 @@ class FaultDetector:
                 'message': 'Insufficient data for detection'
             }
         
-        sequence = self.create_sequences(processed_data)
+        # Extract relevant features from sequence data
+        features = np.array([
+            np.mean(data[:, 0]),    # Average voltage
+            np.std(data[:, 0]),     # Voltage variation
+            np.mean(data[:, 1]),    # Average current
+            np.std(data[:, 1])      # Current variation
+        ]).reshape(1, -1)
+        
+        # Fit and transform for demonstration (in real application, this should be pre-trained)
+        processed_data = self.scaler.fit_transform(features)
         
         # Predict
-        predictions = self.model.predict(sequence[-1:], verbose=0)
-        fault_idx = np.argmax(predictions[0])
-        confidence = predictions[0][fault_idx]
+        probabilities = self.model.predict_proba(processed_data)
+        fault_idx = np.argmax(probabilities[0])
+        confidence = probabilities[0][fault_idx]
         
         fault_detected = (
             fault_idx != 0 and  # Not 'no_fault'
@@ -188,7 +172,7 @@ class FaultDetector:
             'confidence': float(confidence),
             'all_probabilities': {
                 fault_type: float(prob)
-                for fault_type, prob in zip(self.fault_types, predictions[0])
+                for fault_type, prob in zip(self.fault_types, probabilities[0])
             }
         }
     
@@ -197,9 +181,7 @@ class FaultDetector:
         X_train: np.ndarray,
         y_train: np.ndarray,
         X_val: np.ndarray,
-        y_val: np.ndarray,
-        epochs: int = 50,
-        batch_size: int = 32
+        y_val: np.ndarray
     ) -> Dict:
         """
         Train the fault detection model.
@@ -209,46 +191,40 @@ class FaultDetector:
             y_train: Training labels
             X_val: Validation data
             y_val: Validation labels
-            epochs: Number of training epochs
-            batch_size: Batch size
             
         Returns:
-            Training history
+            Training metrics
         """
-        # Callbacks
-        early_stopping = keras.callbacks.EarlyStopping(
-            monitor='val_loss',
-            patience=10,
-            restore_best_weights=True
-        )
-        
-        reduce_lr = keras.callbacks.ReduceLROnPlateau(
-            monitor='val_loss',
-            factor=0.5,
-            patience=5,
-            min_lr=1e-6
-        )
+        # Preprocess data
+        X_train_processed = self.preprocess_data(X_train)
+        X_val_processed = self.scaler.transform(X_val)
         
         # Train
-        history = self.model.fit(
-            X_train, y_train,
-            validation_data=(X_val, y_val),
-            epochs=epochs,
-            batch_size=batch_size,
-            callbacks=[early_stopping, reduce_lr],
-            verbose=1
-        )
+        self.model.fit(X_train_processed, y_train)
+        
+        # Calculate metrics
+        train_score = self.model.score(X_train_processed, y_train)
+        val_score = self.model.score(X_val_processed, y_val)
+        
+        metrics = {
+            'train_accuracy': train_score,
+            'val_accuracy': val_score
+        }
         
         self.logger.info("Model training completed")
-        
-        return history.history
+        return metrics
     
     def save_model(self, filepath: str):
-        """Save model to file."""
-        self.model.save(filepath)
+        """Save model and scaler to file."""
+        joblib.dump({
+            'model': self.model,
+            'scaler': self.scaler
+        }, filepath)
         self.logger.info(f"Model saved to {filepath}")
     
     def load_model(self, filepath: str):
-        """Load model from file."""
-        self.model = keras.models.load_model(filepath)
+        """Load model and scaler from file."""
+        saved_data = joblib.load(filepath)
+        self.model = saved_data['model']
+        self.scaler = saved_data['scaler']
         self.logger.info(f"Model loaded from {filepath}")

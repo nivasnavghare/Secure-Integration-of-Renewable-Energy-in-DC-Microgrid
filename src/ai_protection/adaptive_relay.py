@@ -1,21 +1,20 @@
 """
-Adaptive Relay Coordination using Reinforcement Learning
+Adaptive Relay Coordination using Q-Learning
 
 This module implements adaptive relay coordination for
-optimal protection of DC microgrid.
+optimal protection of DC microgrid using a simpler Q-learning approach.
 """
 
 import numpy as np
-import tensorflow as tf
-from tensorflow import keras
-from collections import deque
+from collections import defaultdict
 import random
 from typing import Dict, List, Tuple, Optional
 import logging
+import joblib
 
 
 class AdaptiveRelayCoordinator:
-    """Adaptive Relay Coordination using Deep Q-Network (DQN)"""
+    """Adaptive Relay Coordination using Q-Learning"""
     
     def __init__(self, config: Dict):
         """
@@ -25,51 +24,59 @@ class AdaptiveRelayCoordinator:
             config: Configuration dictionary
         """
         self.config = config
-        self.learning_rate = config.get('learning_rate', 0.001)
+        self.learning_rate = config.get('learning_rate', 0.1)
         self.discount_factor = config.get('discount_factor', 0.95)
         self.epsilon = config.get('epsilon', 0.1)  # Exploration rate
         self.epsilon_decay = 0.995
         self.epsilon_min = 0.01
         
         # State and action space
-        self.state_size = 8  # [V, I, P, SOC, fault_type, location, time, priority]
+        self.state_features = [
+            'voltage',
+            'current',
+            'power',
+            'battery_soc',
+            'fault_severity',
+            'fault_location',
+            'time_of_day',
+            'load_priority'
+        ]
         self.action_size = 4  # [trip_relay_1, trip_relay_2, adjust_setting, no_action]
         
-        # Experience replay
-        self.memory = deque(maxlen=2000)
-        self.batch_size = 32
-        
-        # Models
-        self.model = self._build_model()
-        self.target_model = self._build_model()
-        self.update_target_model()
+        # Q-table using defaultdict for sparse storage
+        self.q_table = defaultdict(lambda: np.zeros(self.action_size))
         
         self.logger = logging.getLogger(__name__)
-        
-    def _build_model(self) -> keras.Model:
-        """
-        Build Deep Q-Network model.
-        
-        Returns:
-            Keras model
-        """
-        model = keras.Sequential([
-            keras.layers.Dense(64, input_dim=self.state_size, activation='relu'),
-            keras.layers.Dense(64, activation='relu'),
-            keras.layers.Dense(32, activation='relu'),
-            keras.layers.Dense(self.action_size, activation='linear')
-        ])
-        
-        model.compile(
-            optimizer=keras.optimizers.Adam(learning_rate=self.learning_rate),
-            loss='mse'
-        )
-        
-        return model
     
-    def update_target_model(self):
-        """Update target model with current model weights."""
-        self.target_model.set_weights(self.model.get_weights())
+    def discretize_state(self, state: np.ndarray) -> str:
+        """
+        Convert continuous state values to discrete buckets for Q-table.
+        
+        Args:
+            state: Continuous state array
+            
+        Returns:
+            Discretized state string key
+        """
+        # Define buckets for each feature
+        buckets = [
+            np.linspace(0, 1.5, 10),  # voltage (normalized)
+            np.linspace(0, 2, 10),    # current (normalized)
+            np.linspace(0, 2, 10),    # power (normalized)
+            np.linspace(0, 1, 5),     # battery_soc
+            np.linspace(0, 1, 3),     # fault_severity
+            np.linspace(0, 1, 3),     # fault_location
+            np.linspace(0, 1, 6),     # time_of_day
+            np.linspace(0, 1, 3)      # load_priority
+        ]
+        
+        # Digitize each feature
+        discretized = []
+        for value, bucket in zip(state.flatten(), buckets):
+            idx = np.digitize(value, bucket)
+            discretized.append(str(idx))
+        
+        return '_'.join(discretized)
     
     def get_state(self, system_data: Dict) -> np.ndarray:
         """
@@ -105,64 +112,43 @@ class AdaptiveRelayCoordinator:
         Returns:
             Selected action index
         """
+        state_key = self.discretize_state(state)
+        
         if training and random.random() < self.epsilon:
             # Exploration: random action
             return random.randrange(self.action_size)
         
-        # Exploitation: best action from Q-network
-        q_values = self.model.predict(state, verbose=0)
-        return np.argmax(q_values[0])
+        # Exploitation: best action from Q-table
+        return np.argmax(self.q_table[state_key])
     
-    def remember(
+    def update_q_table(
         self,
         state: np.ndarray,
         action: int,
         reward: float,
-        next_state: np.ndarray,
-        done: bool
+        next_state: np.ndarray
     ):
         """
-        Store experience in replay memory.
+        Update Q-table using Q-learning update rule.
         
         Args:
             state: Current state
             action: Action taken
             reward: Reward received
             next_state: Next state
-            done: Whether episode is done
         """
-        self.memory.append((state, action, reward, next_state, done))
-    
-    def replay(self):
-        """Train the model using experience replay."""
-        if len(self.memory) < self.batch_size:
-            return
+        state_key = self.discretize_state(state)
+        next_state_key = self.discretize_state(next_state)
         
-        # Sample mini-batch
-        minibatch = random.sample(self.memory, self.batch_size)
+        # Q-learning update rule
+        current_q = self.q_table[state_key][action]
+        next_max_q = np.max(self.q_table[next_state_key])
         
-        states = np.vstack([sample[0] for sample in minibatch])
-        actions = np.array([sample[1] for sample in minibatch])
-        rewards = np.array([sample[2] for sample in minibatch])
-        next_states = np.vstack([sample[3] for sample in minibatch])
-        dones = np.array([sample[4] for sample in minibatch])
+        new_q = current_q + self.learning_rate * (
+            reward + self.discount_factor * next_max_q - current_q
+        )
         
-        # Current Q-values
-        current_q = self.model.predict(states, verbose=0)
-        
-        # Target Q-values
-        next_q = self.target_model.predict(next_states, verbose=0)
-        
-        # Update Q-values
-        for i in range(self.batch_size):
-            if dones[i]:
-                current_q[i][actions[i]] = rewards[i]
-            else:
-                current_q[i][actions[i]] = rewards[i] + \
-                    self.discount_factor * np.max(next_q[i])
-        
-        # Train model
-        self.model.fit(states, current_q, epochs=1, verbose=0)
+        self.q_table[state_key][action] = new_q
         
         # Decay epsilon
         if self.epsilon > self.epsilon_min:
@@ -246,21 +232,28 @@ class AdaptiveRelayCoordinator:
         
         decision = action_map[action]
         decision['action_index'] = action
-        decision['confidence'] = float(np.max(
-            self.model.predict(state, verbose=0)[0]
-        ))
+        decision['confidence'] = float(
+            self.q_table[self.discretize_state(state)][action] /
+            np.max(list(self.q_table.values())) if self.q_table else 0.5
+        )
         
         self.logger.info(f"Relay coordination decision: {decision}")
         
         return decision
     
     def save_model(self, filepath: str):
-        """Save model to file."""
-        self.model.save(filepath)
-        self.logger.info(f"Model saved to {filepath}")
+        """Save Q-table to file."""
+        # Convert defaultdict to regular dict for saving
+        q_table_dict = dict(self.q_table)
+        joblib.dump(q_table_dict, filepath)
+        self.logger.info(f"Q-table saved to {filepath}")
     
     def load_model(self, filepath: str):
-        """Load model from file."""
-        self.model = keras.models.load_model(filepath)
-        self.update_target_model()
-        self.logger.info(f"Model loaded from {filepath}")
+        """Load Q-table from file."""
+        q_table_dict = joblib.load(filepath)
+        # Convert back to defaultdict
+        self.q_table = defaultdict(
+            lambda: np.zeros(self.action_size),
+            q_table_dict
+        )
+        self.logger.info(f"Q-table loaded from {filepath}")
