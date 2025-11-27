@@ -68,6 +68,8 @@ Load_peak = 70;         % Peak load (kW) - as per FINAL_PROJECT_REPORT.md
 Load_base = 30;         % Base load (kW) - as per documentation
 Load_critical = 50;     % Critical portion of peak load
 Load_noncritical = 20;  % Non-critical portion
+Load_industrial = 15;   % Industrial load portion (kW)
+Load_residential = 10;  % Residential load portion (kW)
 
 % Protection System Parameters
 fault_detection_enabled = true;

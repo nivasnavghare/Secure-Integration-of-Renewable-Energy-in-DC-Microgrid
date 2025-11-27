@@ -52,6 +52,8 @@ Batt_efficiency = 0.90; % Battery efficiency - as per documentation
 % Load Parameters (per FINAL_PROJECT_REPORT.md)
 Load_peak = 70;         % Peak load (kW) - as per documentation
 Load_base = 30;         % Base load (kW) - as per documentation
+Load_critical = 50;     % Critical load (kW)
+Load_noncritical = 20;  % Non-critical load (kW)
 
 %% Generate Input Data
 fprintf('Generating environmental data...\n');
@@ -231,7 +233,7 @@ plot(t/3600, P_battery, 'LineWidth', 2, 'Color', [0 0.5 0]);
 yline(0, 'k-', 'LineWidth', 0.5);
 xlabel('Time (hours)', 'FontSize', 12);
 ylabel('Battery Power (kW)', 'FontSize', 12);
-title('Positive: Charging, Negative: Discharging', 'FontSize', 10, 'FontStyle', 'italic');
+title('Positive: Charging, Negative: Discharging', 'FontSize', 10);
 grid on;
 saveas(gcf, 'results/matlab_battery_operation.png');
 
