@@ -1,0 +1,26 @@
+{
+ "baseUrl":"support/slwebview_files",
+ "homeHid":1,
+ "initialElement":"",
+ "sections":[
+  {
+   "hid":1,
+   "sid":"DC_Microgrid_Complete",
+   "name":"DC_Microgrid_Complete",
+   "fullname":"DC_Microgrid_Complete",
+   "label":"DC_Microgrid_Complete*",
+   "parent":0,
+   "descendants":[
+   ],
+   "hierarchyUrl":"support/slwebview_files/DC_Microgrid_Complete_h_1.json",
+   "backingUrl":"support/slwebview_files/DC_Microgrid_Complete_m.json"
+  }
+ ],
+ "optViews":[
+ ],
+ "display":{
+  "informer":false,
+  "notes":false
+ },
+ "iconsUrl":"support/slwebview_files/DC_Microgrid_Complete_icons.css"
+}

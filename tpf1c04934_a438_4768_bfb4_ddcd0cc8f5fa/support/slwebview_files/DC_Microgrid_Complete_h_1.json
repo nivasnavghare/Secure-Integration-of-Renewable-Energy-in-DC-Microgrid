@@ -1,0 +1,20 @@
+[
+ {
+  "hid":1,
+  "sid":"DC_Microgrid_Complete",
+  "esid":"",
+  "parent":0,
+  "children":[
+  ],
+  "name":"DC_Microgrid_Complete",
+  "fullname":"DC_Microgrid_Complete",
+  "label":"DC_Microgrid_Complete",
+  "icon":"DC_Microgrid_Complete0",
+  "svg":"support/slwebview_files/DC_Microgrid_Complete_d.svg",
+  "thumbnail":"support/slwebview_files/DC_Microgrid_Complete_d.png",
+  "backingUrl":"support/slwebview_files/DC_Microgrid_Complete_d.json",
+  "elements":[
+  ],
+  "sameAsElement":false
+ }
+]

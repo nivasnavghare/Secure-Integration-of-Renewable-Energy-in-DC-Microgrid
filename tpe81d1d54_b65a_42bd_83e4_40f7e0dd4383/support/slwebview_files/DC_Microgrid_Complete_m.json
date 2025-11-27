@@ -1,0 +1,39 @@
+[
+ {
+  "sid":"DC_Microgrid_Complete",
+  "className":"Simulink.BlockDiagram",
+  "icon":"DC_Microgrid_Complete0",
+  "name":"DC_Microgrid_Complete",
+  "label":"DC_Microgrid_Complete*",
+  "parent":"",
+  "inspector":{
+   "params":[
+    "ModelVersion",
+    "LastModifiedDate",
+    "LibraryLinkDisplay",
+    "ModelBrowserVisibility",
+    "Dirty",
+    "Description"
+   ],
+   "values":[
+    "1.0",
+    "Thu Feb 03 00:59:52 2022",
+    "disabled",
+    "on",
+    "on",
+    ""
+   ],
+   "tabs":[
+   ],
+   "tabs_idx":[
+   ]
+  },
+  "viewer":{
+   "jshandler":"webview/handlers/ElementHandler"
+  },
+  "obj_viewer":[
+  ],
+  "finder":[
+  ]
+ }
+]
