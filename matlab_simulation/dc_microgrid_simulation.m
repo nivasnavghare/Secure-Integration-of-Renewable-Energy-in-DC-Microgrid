@@ -1,43 +1,57 @@
-%% DC Microgrid Simulation - MATLAB/Simulink
-% Main simulation script for DC microgrid modeling
+%% DC Microgrid Simulation - Complete MATLAB Implementation
+% Secure Integration of Renewable Energy in DC Microgrid
+% Features: PV/Wind generation, Battery storage, AI protection systems,
+%          Fault detection, Power quality analysis, Real-time monitoring
 % Author: Nivas D. Navghare
 % Institution: COEP Technological University, Pune
+% Date: November 2025
+% Version: 2.0 - Enhanced with AI/ML capabilities
 
-%% Clear workspace
+%% Clear workspace and initialize
 clear; clc; close all;
+format compact;
+warning('off', 'all');
 
 %% Configuration Parameters
-fprintf('Initializing DC Microgrid Simulation...\n');
+fprintf('========================================\n');
+fprintf('DC MICROGRID SIMULATION INITIALIZATION\n');
+fprintf('========================================\n');
+fprintf('Initializing comprehensive DC microgrid simulation...\n\n');
 
 % System Parameters
 Vdc = 380;              % DC bus voltage (V)
+Vdc_min = 0.85 * Vdc;   % Minimum allowable voltage (V)
+Vdc_max = 1.15 * Vdc;   % Maximum allowable voltage (V)
 f_nominal = 50;         % Nominal frequency (Hz)
-T_sim = 3600;           % Simulation time (seconds)
+T_sim = 86400;          % Simulation time (24 hours in seconds)
+dt = 1;                 % Time step (seconds)
+sample_freq = 1000;     % Sampling frequency (Hz)
 
-% PV System Parameters
-PV_rated = 100;         % Rated power (kW)
+% PV System Parameters (per FINAL_PROJECT_REPORT.md)
+PV_rated = 50;          % Rated power (kW) - as per documentation
 PV_efficiency = 0.18;   % Panel efficiency
-Panel_area = 600;       % Panel area (m²)
+Panel_area = 278;       % Panel area (m²) - calculated for 50kW
 Temp_coeff = -0.004;    % Temperature coefficient (per °C)
 
-% Wind Turbine Parameters
-Wind_rated = 50;        % Rated power (kW)
+% Wind Turbine Parameters (per FINAL_PROJECT_REPORT.md)
+Wind_rated = 30;        % Rated power (kW) - as per documentation
 v_cutin = 3;            % Cut-in wind speed (m/s)
 v_rated = 12;           % Rated wind speed (m/s)
 v_cutout = 25;          % Cut-out wind speed (m/s)
+rotor_diameter = 8;     % Rotor diameter (m) - as per documentation
 
-% Battery Parameters
-Batt_capacity = 200;    % Capacity (kWh)
-Batt_charge_max = 50;   % Max charge rate (kW)
-Batt_discharge_max = 50;% Max discharge rate (kW)
+% Battery Parameters (per FINAL_PROJECT_REPORT.md)
+Batt_capacity = 100;    % Capacity (kWh) - as per documentation
+Batt_charge_max = 50;   % Max charge rate (kW) - 0.5C rate
+Batt_discharge_max = 50;% Max discharge rate (kW) - 0.5C rate
 SOC_init = 0.5;         % Initial SOC
-SOC_min = 0.2;          % Minimum SOC
-SOC_max = 0.9;          % Maximum SOC
-Batt_efficiency = 0.95; % Battery efficiency
+SOC_min = 0.2;          % Minimum SOC - as per documentation
+SOC_max = 0.95;         % Maximum SOC - as per documentation
+Batt_efficiency = 0.90; % Battery efficiency - as per documentation
 
-% Load Parameters
-Load_critical = 80;     % Critical load (kW)
-Load_noncritical = 40;  % Non-critical load (kW)
+% Load Parameters (per FINAL_PROJECT_REPORT.md)
+Load_peak = 70;         % Peak load (kW) - as per documentation
+Load_base = 30;         % Base load (kW) - as per documentation
 
 %% Generate Input Data
 fprintf('Generating environmental data...\n');

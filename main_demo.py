@@ -30,8 +30,10 @@ wind_rated = config['wind_turbine']['rated_power']
 bess_capacity = config['bess']['capacity']
 vdc = config['system']['voltage_level']
 
-print(f"✓ System Voltage: {vdc}V DC")
-print(f"✓ PV Capacity: {pv_rated}kW")
+print(f"✓ System Voltage: {vdc}V DC (400V per documentation)")
+print(f"✓ PV Capacity: {pv_rated}kW (50kW per FINAL_PROJECT_REPORT.md)")
+print(f"✓ Wind Capacity: {wind_rated}kW (30kW per documentation)")
+print(f"✓ Battery Capacity: {bess_capacity}kWh (100kWh per documentation)")
 print(f"✓ Wind Capacity: {wind_rated}kW")
 print(f"✓ Battery Capacity: {bess_capacity}kWh")
 

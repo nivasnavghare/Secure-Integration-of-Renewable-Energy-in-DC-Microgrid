@@ -50,8 +50,8 @@ class Visualizer:
         # SOC plot
         ax1.plot(time_hours, np.array(results['battery_soc']) * 100, 
                 linewidth=2, color='blue')
-        ax1.axhline(y=20, color='r', linestyle='--', label='Min SOC')
-        ax1.axhline(y=90, color='r', linestyle='--', label='Max SOC')
+        ax1.axhline(y=20, color='r', linestyle='--', label='Min SOC (20%)')
+        ax1.axhline(y=95, color='r', linestyle='--', label='Max SOC (95%)')  # Updated per documentation
         ax1.set_ylabel('State of Charge (%)', fontsize=12)
         ax1.set_title('Battery Energy Storage System Operation', fontsize=14, fontweight='bold')
         ax1.legend(loc='best')

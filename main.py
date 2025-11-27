@@ -18,6 +18,9 @@ from src.microgrid_model import DCMicrogrid, PowerFlowAnalyzer
 from src.ai_protection import FaultDetector, AnomalyDetector, AdaptiveRelayCoordinator
 from src.utils import DataLogger, Visualizer, PerformanceMetrics
 
+# Project specifications from FINAL_PROJECT_REPORT.md:
+# DC Bus: 400V, PV: 50kW, Wind: 30kW, Battery: 100kWh, Load: 70kW peak/30kW base
+
 
 def setup_logging(config: dict):
     """Setup logging configuration."""

@@ -230,22 +230,26 @@ nano microgrid_config.yaml
 
 ```yaml
 system:
-  voltage: 400              # DC bus voltage (V)
+  voltage_level: 400        # DC bus voltage (V) - per FINAL_PROJECT_REPORT.md
   base_power: 100000        # Base power (W)
 
-pv_system:
-  rated_power: 50000        # PV capacity (W)
+photovoltaic:
+  rated_power: 50           # PV capacity (kW) - per documentation
   efficiency: 0.18          # Panel efficiency
+  panel_area: 278           # m² - calculated for 50kW
 
 wind_turbine:
-  rated_power: 30000        # Wind capacity (W)
+  rated_power: 30           # Wind capacity (kW) - per documentation
   cut_in_speed: 3           # Min wind speed (m/s)
   rated_speed: 12           # Rated wind speed (m/s)
+  rotor_diameter: 8         # meters - per documentation
 
-battery:
-  capacity: 100             # Battery capacity (kWh)
+bess:
+  capacity: 100             # Battery capacity (kWh) - per documentation
   initial_soc: 0.5          # Initial state of charge (50%)
   min_soc: 0.2              # Minimum SOC (20%)
+  max_soc: 0.95             # Maximum SOC (95%) - per documentation
+  efficiency: 0.90          # Round-trip efficiency - per documentation
   max_soc: 0.95             # Maximum SOC (95%)
 ```
 

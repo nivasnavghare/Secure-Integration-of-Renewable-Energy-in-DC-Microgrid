@@ -37,30 +37,30 @@ Vdc = config['system']['voltage_level']
 f_nominal = 50
 T_sim = 24 * 3600  # 24 hours
 
-# PV System Parameters
-PV_rated = config['photovoltaic']['rated_power']
+# PV System Parameters (per FINAL_PROJECT_REPORT.md)
+PV_rated = config['photovoltaic']['rated_power']  # 50kW
 PV_efficiency = 0.18
-Panel_area = 600
+Panel_area = 278  # m² - calculated for 50kW
 Temp_coeff = -0.004
 
-# Wind Turbine Parameters
-Wind_rated = config['wind_turbine']['rated_power']
+# Wind Turbine Parameters (per FINAL_PROJECT_REPORT.md)
+Wind_rated = config['wind_turbine']['rated_power']  # 30kW
 v_cutin = 3
 v_rated = 12
 v_cutout = 25
 
-# Battery Parameters
-Batt_capacity = config['bess']['capacity']
-Batt_charge_max = 50
-Batt_discharge_max = 50
+# Battery Parameters (per FINAL_PROJECT_REPORT.md)
+Batt_capacity = config['bess']['capacity']  # 100kWh
+Batt_charge_max = 50  # 0.5C rate
+Batt_discharge_max = 50  # 0.5C rate
 SOC_init = 0.5
-SOC_min = 0.2
-SOC_max = 0.9
-Batt_efficiency = 0.95
+SOC_min = 0.2  # as per documentation
+SOC_max = 0.95  # as per documentation
+Batt_efficiency = 0.90  # as per documentation
 
-# Load Parameters
-Load_critical = 80
-Load_noncritical = 40
+# Load Parameters (per FINAL_PROJECT_REPORT.md)
+Load_peak = 70  # Peak load (kW)
+Load_base = 30  # Base load (kW)
 
 print(f"System Configuration:")
 print(f"  DC Bus Voltage:     {Vdc} V")
@@ -153,8 +153,8 @@ for i in range(1, len(t)):
     else:
         SOC[i] = SOC[i-1]
 
-# Voltage calculation (with variations)
-V_bus = Vdc + 5 * np.random.randn(len(t))
+# DC Bus Voltage calculation (400V nominal with variations)
+V_bus = Vdc + 5 * np.random.randn(len(t))  # ±5V variation around 400V nominal
 
 # THD estimation
 THD = 2 + 1 * np.random.rand()

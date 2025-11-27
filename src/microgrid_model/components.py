@@ -22,10 +22,10 @@ class PVSystem:
         Args:
             config: Configuration dictionary containing PV parameters
         """
-        self.rated_power = config.get('rated_power', 100)  # kW
+        self.rated_power = config.get('rated_power', 50)  # kW - as per FINAL_PROJECT_REPORT.md
         self.efficiency = config.get('efficiency', 0.18)
         self.temp_coefficient = config.get('temperature_coefficient', -0.004)
-        self.panel_area = config.get('panel_area', 600)  # m²
+        self.panel_area = config.get('panel_area', 278)  # m² - calculated for 50kW
         self.reference_temp = 25  # °C
         
     def calculate_power(self, irradiance: float, temperature: float) -> float:
@@ -58,8 +58,8 @@ class PVSystem:
         Returns:
             MPPT voltage in V
         """
-        # Simplified MPPT voltage calculation
-        return 380 * (1 + 0.05 * np.log(irradiance / 1000))
+        # Simplified MPPT voltage calculation - 400V DC bus
+        return 400 * (1 + 0.05 * np.log(irradiance / 1000))
 
 
 class WindTurbine:
@@ -72,11 +72,11 @@ class WindTurbine:
         Args:
             config: Configuration dictionary containing wind turbine parameters
         """
-        self.rated_power = config.get('rated_power', 50)  # kW
+        self.rated_power = config.get('rated_power', 30)  # kW - as per FINAL_PROJECT_REPORT.md
         self.cut_in_speed = config.get('cut_in_speed', 3)  # m/s
         self.rated_speed = config.get('rated_speed', 12)  # m/s
         self.cut_out_speed = config.get('cut_out_speed', 25)  # m/s
-        self.rotor_diameter = config.get('rotor_diameter', 15)  # m
+        self.rotor_diameter = config.get('rotor_diameter', 8)  # m - as per documentation
         self.air_density = 1.225  # kg/m³
         self.power_coefficient = 0.4
         
@@ -129,12 +129,12 @@ class BatteryStorage:
         Args:
             config: Configuration dictionary containing battery parameters
         """
-        self.capacity = config.get('capacity', 200)  # kWh
-        self.max_charge_rate = config.get('max_charge_rate', 50)  # kW
-        self.max_discharge_rate = config.get('max_discharge_rate', 50)  # kW
-        self.efficiency = config.get('efficiency', 0.95)
-        self.min_soc = config.get('min_soc', 0.2)
-        self.max_soc = config.get('max_soc', 0.9)
+        self.capacity = config.get('capacity', 100)  # kWh - as per FINAL_PROJECT_REPORT.md
+        self.max_charge_rate = config.get('max_charge_rate', 50)  # kW - 0.5C rate
+        self.max_discharge_rate = config.get('max_discharge_rate', 50)  # kW - 0.5C rate
+        self.efficiency = config.get('efficiency', 0.90)  # as per documentation
+        self.min_soc = config.get('min_soc', 0.2)  # as per documentation
+        self.max_soc = config.get('max_soc', 0.95)  # as per documentation
         self.soc = config.get('initial_soc', 0.5)  # State of Charge
         
         # Battery degradation parameters
@@ -229,7 +229,7 @@ class Load:
         self.power_factor = config.get('power_factor', 0.95)
         self.voltage_dependency = config.get('voltage_dependency', 1.5)
         
-    def calculate_power(self, voltage: float, base_voltage: float = 380) -> float:
+    def calculate_power(self, voltage: float, base_voltage: float = 400) -> float:
         """
         Calculate load power considering voltage dependency.
         

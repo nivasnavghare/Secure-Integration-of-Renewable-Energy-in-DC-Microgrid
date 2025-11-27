@@ -3,17 +3,17 @@
 
 system:
   name: "DC_Microgrid_Test_System"
-  voltage_level: 380  # DC voltage in Volts
+  voltage_level: 400  # DC voltage in Volts - as per FINAL_PROJECT_REPORT.md
   frequency: 50  # Hz (for AC components)
   simulation_time: 3600  # seconds
 
 # Renewable Energy Sources
 photovoltaic:
   enabled: true
-  rated_power: 100  # kW
+  rated_power: 50  # kW - as per FINAL_PROJECT_REPORT.md
   efficiency: 0.18
   temperature_coefficient: -0.004  # per °C
-  panel_area: 600  # m²
+  panel_area: 278  # m² - calculated for 50kW
   location:
     latitude: 18.5204
     longitude: 73.8567
@@ -21,37 +21,37 @@ photovoltaic:
 
 wind_turbine:
   enabled: true
-  rated_power: 50  # kW
+  rated_power: 30  # kW - as per FINAL_PROJECT_REPORT.md
   cut_in_speed: 3  # m/s
   rated_speed: 12  # m/s
   cut_out_speed: 25  # m/s
   hub_height: 30  # meters
-  rotor_diameter: 15  # meters
+  rotor_diameter: 8  # meters - as per documentation
   wind_profile: "data/wind_speed.csv"
 
 # Battery Energy Storage System
 bess:
   enabled: true
-  capacity: 200  # kWh
-  max_charge_rate: 50  # kW
-  max_discharge_rate: 50  # kW
+  capacity: 100  # kWh - as per FINAL_PROJECT_REPORT.md
+  max_charge_rate: 50  # kW - 0.5C rate
+  max_discharge_rate: 50  # kW - 0.5C rate
   initial_soc: 0.5  # State of Charge (0-1)
-  min_soc: 0.2
-  max_soc: 0.9
-  efficiency: 0.95
+  min_soc: 0.2  # as per documentation
+  max_soc: 0.95  # as per documentation
+  efficiency: 0.90  # as per documentation
   battery_type: "Lithium-ion"
 
 # Loads
 loads:
-  critical_load:
-    power: 80  # kW
+  peak_load:
+    power: 70  # kW - as per FINAL_PROJECT_REPORT.md
     priority: 1
-    load_profile: "data/critical_load.csv"
+    load_profile: "data/peak_load.csv"
   
-  non_critical_load:
-    power: 40  # kW
+  base_load:
+    power: 30  # kW - as per FINAL_PROJECT_REPORT.md
     priority: 2
-    load_profile: "data/non_critical_load.csv"
+    load_profile: "data/base_load.csv"
 
 # Protection System
 protection:

@@ -204,19 +204,23 @@ pytest tests/ --cov=src --cov-report=html
 
 ```yaml
 system:
-  voltage_level: 380  # DC voltage in Volts
+  voltage_level: 400  # DC voltage in Volts - per FINAL_PROJECT_REPORT.md
   
 photovoltaic:
-  rated_power: 100  # kW
+  rated_power: 50  # kW - per documentation
   efficiency: 0.18
+  panel_area: 278  # m² - calculated for 50kW
   
 wind_turbine:
-  rated_power: 50  # kW
+  rated_power: 30  # kW - per documentation
   cut_in_speed: 3  # m/s
+  rotor_diameter: 8  # meters - per documentation
   
 bess:
-  capacity: 200  # kWh
+  capacity: 100  # kWh - per documentation
   initial_soc: 0.5
+  max_soc: 0.95  # per documentation
+  efficiency: 0.90  # per documentation
   
 ai_ml:
   fault_detection:

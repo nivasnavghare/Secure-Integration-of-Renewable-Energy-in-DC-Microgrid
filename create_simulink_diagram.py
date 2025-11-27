@@ -115,7 +115,7 @@ create_arrow(ax, 8.4, 6, 9, 6.3)
 # ========== BATTERY MANAGEMENT SYSTEM ==========
 ax.text(13, 11.5, 'ENERGY STORAGE SYSTEM', fontsize=10, fontweight='bold')
 
-create_block(ax, 11.5, 8.5, 3, 2, 'BATTERY MANAGEMENT\nSYSTEM (BMS)\n\nCapacity: 200 kWh\nSOC: 20-90%\nη = 95%', color_storage)
+create_block(ax, 11.5, 8.5, 3, 2, 'BATTERY MANAGEMENT\nSYSTEM (BMS)\n\nCapacity: 100 kWh\nSOC: 20-95%\nη = 90%', color_storage)
 
 create_arrow(ax, 10.5, 5.9, 11.5, 9, 'ΔP')
 
@@ -137,7 +137,7 @@ create_arrow(ax, 13, 10.5, 13, 11.5, 'Pbatt')
 create_arrow(ax, 13.5, 10.5, 13.5, 11.5, 'SOC')
 
 # ========== DC BUS ==========
-create_block(ax, 11.5, 5, 3, 1.2, 'DC BUS\nVdc = 380V\nPower Flow Control', '#FFE6F0')
+create_block(ax, 11.5, 5, 3, 1.2, 'DC BUS\nVdc = 400V\nPower Flow Control', '#FFE6F0')
 
 # Connection to DC bus
 create_arrow(ax, 13, 8.5, 13, 6.2, 'Pbatt')
